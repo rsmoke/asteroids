@@ -46,6 +46,8 @@ gameState.prototype = {
     
     create: function () {
         this.initGraphics();
+        this.initPhysics();
+        this.initKeyboard();
     },
 
     update: function () {
@@ -70,6 +72,16 @@ gameState.prototype = {
         this.key_left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         this.key_right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         this.key_thrust = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    },
+
+    checkPlayerInput: function () {
+        if (this.key_left.isDown) {
+          this.shipSprite.body.angularVelocity = -shipProperties.angularVelocity;
+        } else if (this.key_right.isDown) {
+          this.shipSprite.body.angularVelocity = shipProperties.angularVelocity;
+        } else {
+          this.shipSprite.body.angularVelocity = 0;
+        }
     }
 };
 
