@@ -82,6 +82,12 @@ gameState.prototype = {
         } else {
           this.shipSprite.body.angularVelocity = 0;
         }
+
+        if (this.key_thrust.isDown) {
+            game.physics.arcade.accelerationFromRotation(this.shipSprite.rotation, shipProperties.acceleration, this.shipSprite.body.acceleration);
+        } else {
+            this.shipSprite.body.acceleration.set(0);
+        }
     }
 };
 
