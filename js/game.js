@@ -64,6 +64,12 @@ gameState.prototype = {
         game.physics.enable(this.shipSprite, Phaser.Physics.ARCADE);
         this.shipSprite.body.drag.set(shipProperties.drag);
         this.shipSprite.body.maxVelocity.set(shipProperties.maxVelocity);
+    },
+
+    initKeyboard: function () {
+        this.key_left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        this.key_right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        this.key_thrust = game.input.keyboard.addKey(Phaser.Keyboard.UP);
     }
 };
 
