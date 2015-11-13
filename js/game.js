@@ -22,7 +22,11 @@ var graphicAssets = {
 
 var shipProperties = {
   startX: gameProperties.screenWidth * 0.5,
-  startY: gameProperties.screenHeight * 0.5
+  startY: gameProperties.screenHeight * 0.5,
+  acceleration: 300,
+  drag: 100,
+  maxVelocity: 300,
+  angularVelocity: 200
 };
 
 gameState.prototype = {
