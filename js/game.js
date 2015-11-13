@@ -9,6 +9,10 @@ var states = {
 
 var gameState = function(game){
     this.shipSprite;
+
+    this.key_left;
+    this.key_right;
+    this.key_thrust;
 };
 
 var graphicAssets = {
