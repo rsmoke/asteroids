@@ -51,7 +51,7 @@ gameState.prototype = {
     },
 
     update: function () {
-        
+        this.checkPlayerInput();
     },
 
     initGraphics: function () {
