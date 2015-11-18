@@ -52,6 +52,7 @@ gameState.prototype = {
 
     update: function () {
         this.checkPlayerInput();
+        this.checkBoundaries(this.shipSprite);
     },
 
     initGraphics: function () {
@@ -87,6 +88,20 @@ gameState.prototype = {
             game.physics.arcade.accelerationFromRotation(this.shipSprite.rotation, shipProperties.acceleration, this.shipSprite.body.acceleration);
         } else {
             this.shipSprite.body.acceleration.set(0);
+        }
+    },
+
+    checkBoundaries: function (sprite) {
+        if (sprite.x < 0){
+            sprite.x = game.width;
+        } else if (sprite.x > game.width) {
+            sprite.x = 0;
+        }
+
+        if (sprite.y < 0){
+            sprite.y = game.height;
+        } else if (sprite.y > game.height) {
+            sprite.y = 0;
         }
     }
 };
