@@ -17,7 +17,6 @@ var gameState = function(game){
 
     this.bulletGroup;
     this.bulletInterval = 0;
-
 };
 
 var graphicAssets = {
@@ -94,6 +93,7 @@ gameState.prototype = {
         this.key_left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         this.key_right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         this.key_thrust = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        this.key_fire = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     },
 
     checkPlayerInput: function () {
@@ -110,6 +110,10 @@ gameState.prototype = {
         } else {
             this.shipSprite.body.acceleration.set(0);
         }
+
+        if (this.key_fire.isDown) {
+            this.fire();
+        }
     },
 
     checkBoundaries: function (sprite) {
@@ -123,6 +127,25 @@ gameState.prototype = {
             sprite.y = game.height;
         } else if (sprite.y > game.height) {
             sprite.y = 0;
+        }
+    },
+
+    fire: function () {
+        if (game.time.now > this.bulletInterval){
+            var bullet = this bulletGroup.getFirstExists(false);
+
+            if (bullet) {
+                var length = this.shipSprite.width * 0.5;
+                var x = this.shipSprite.x + (Math.cos(this.shipSprite.rotation) * length);
+                var y = this.shipSprite.y + (Math.sin(this.shipSprite.rotation) * length);
+
+                bullet.reset(x, y);
+                bullet.lifespan = bulletProperties.lifeSpan;
+                bullet.rotation = this.shipSprite.rotation;
+
+                game.physics.arcade.velocityFromRotation(this.shipSprite.rotation, bulletProperties.speed, bullet.body.velocity);
+                this.bulletInterval = game.time.now + bulletProperties.interval;
+            }
         }
     }
 };
