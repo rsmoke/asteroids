@@ -64,6 +64,7 @@ gameState.prototype = {
     update: function () {
         this.checkPlayerInput();
         this.checkBoundaries(this.shipSprite);
+        this.bulletGroup.forEachExists(this.checkBoundaries, this);
     },
 
     initGraphics: function () {
@@ -81,7 +82,7 @@ gameState.prototype = {
         this.shipSprite.body.drag.set(shipProperties.drag);
         this.shipSprite.body.maxVelocity.set(shipProperties.maxVelocity);
 
-        this.bulletGroup.enable.body = true;
+        this.bulletGroup.enableBody = true;
         this.bulletGroup.physicsBodyType = Phaser.Physics.ARCADE;
         this.bulletGroup.createMultiple(30, graphicAssets.bullet.name);
         this.bulletGroup.setAll('anchor.x', 0.5);
@@ -132,7 +133,7 @@ gameState.prototype = {
 
     fire: function () {
         if (game.time.now > this.bulletInterval){
-            var bullet = this bulletGroup.getFirstExists(false);
+            var bullet = this.bulletGroup.getFirstExists(false);
 
             if (bullet) {
                 var length = this.shipSprite.width * 0.5;
