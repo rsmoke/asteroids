@@ -1,3 +1,4 @@
+//From http://www.zekechan.net/asteroids-html5-game-tutorial-1/
 var gameProperties = {
     screenWidth: 640,
     screenHeight: 480,
@@ -50,7 +51,7 @@ var fontAssets = {
 var soundAssets = {
     fire:{URL:['assets/fire.m4a', 'assets/fire.ogg'], name:'fire'},
     destroyed:{URL:['assets/destroyed.m4a', 'assets/destroyed.ogg'], name:'destroyed'},
-}
+};
 
 var shipProperties = {
     startX: gameProperties.screenWidth * 0.5,
@@ -68,7 +69,7 @@ var bulletProperties = {
     speed: 400,
     interval: 250,
     lifeSpan: 2000,
-    maxCount: 30
+    maxCount: 30,
 };
 
 var asteroidProperties = {
