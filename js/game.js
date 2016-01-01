@@ -61,7 +61,7 @@ var shipProperties = {
     angularVelocity: 200,
     startingLives: 3,
     timeToReset: 3,
-    blinkDelay: 0.2;
+    blinkDelay: 0.2,
 };
 
 var bulletProperties = {
