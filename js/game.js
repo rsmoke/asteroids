@@ -11,6 +11,7 @@ var states = {
 
 var gameState = function(game){
     this.shipSprite;
+    this.shipIsInvulnerable;
 
     this.key_left;
     this.key_right;
@@ -42,6 +43,15 @@ var graphicAssets = {
     asteroidSmall:{URL:'assets/asteroidSmall.png', name:'asteroidSmall'},
 };
 
+var fontAssets = {
+    counterFontStyle:{font: '20px Arial', fill: '#FFFFFF', align: 'center'},
+};
+
+var soundAssets = {
+    fire:{URL:['assets/fire.m4a', 'assets/fire.ogg'], name:'fire'},
+    destroyed:{URL:['assets/destroyed.m4a', 'assets/destroyed.ogg'], name:'destroyed'},
+}
+
 var shipProperties = {
     startX: gameProperties.screenWidth * 0.5,
     startY: gameProperties.screenHeight * 0.5,
@@ -51,6 +61,7 @@ var shipProperties = {
     angularVelocity: 200,
     startingLives: 3,
     timeToReset: 3,
+    blinkDelay: 0.2;
 };
 
 var bulletProperties = {
@@ -69,15 +80,6 @@ var asteroidProperties = {
     asteroidMedium: { minVelocity: 50, maxVelocity: 200, minAngularVelocity: 0, maxAngularVelocity: 200, score: 50, nextSize: graphicAssets.asteroidSmall.name, pieces: 2 },
     asteroidSmall: { minVelocity: 50, maxVelocity: 300, minAngularVelocity: 0, maxAngularVelocity: 200, score: 100},
 };
-
-var fontAssets = {
-    counterFontStyle:{font: '20px Arial', fill: '#FFFFFF', align: 'center'},
-};
-
-var soundAssets = {
-    fire:{URL:['assets/fire.m4a', 'assets/fire.ogg'], name:'fire'},
-    destroyed:{URL:['assets/destroyed.m4a', 'assets/destroyed.ogg'], name:'destroyed'},
-}
 
 gameState.prototype = {
 
@@ -108,7 +110,10 @@ gameState.prototype = {
         this.asteroidGroup.forEachExists(this.checkBoundaries, this);
 
         game.physics.arcade.overlap(this.bulletGroup, this.asteroidGroup, this.asteroidCollision, null, this);
+
+        if (!this.shipIsInvulnerable){
         game.physics.arcade.overlap(this.shipSprite, this.asteroidGroup, this.asteroidCollision, null, this);
+        }
     },
 
     initGraphics: function () {
@@ -271,8 +276,20 @@ gameState.prototype = {
     },
 
     resetShip: function(){
+        this.shipIsInvulnerable = true;
         this.shipSprite.reset(shipProperties.startX, shipProperties.startY);
         this.shipSprite.angle = -90;
+        game.time.events.add(Phaser.Timer.SECOND * shipProperties.timeToReset, this.shipReady, this);
+        game.time.events.repeat(Phaser.Timer.SECOND * shipProperties.blinkDelay, shipProperties.timeToReset / shipProperties.blinkDelay, this.shipBlink, this);
+    },
+
+    shipReady: function(){
+        this.shipIsInvulnerable = false;
+        this.shipSprite.visible = true;
+    },
+
+    shipBlink: function(){
+        this.shipSprite.visible = !this.shipSprite.visible;
     },
 
     splitAsteroid: function (asteroid){
