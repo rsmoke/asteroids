@@ -4,42 +4,12 @@ var gameProperties = {
     screenHeight: 480,
 
     delayToStartLevel: 3,
+    padding: 30,
 };
 
 var states = {
     main: "main",
     game: "game",
-};
-
-var gameState = function(game){
-    this.shipSprite;
-    this.shipIsInvulnerable;
-
-    this.key_left;
-    this.key_right;
-    this.key_thrust;
-    this.key_fire;
-
-    this.bulletGroup;
-    this.bulletInterval = 0;
-
-    this.asteroidGroup;
-    this.asteroidsCount = asteroidProperties.startingAsteroids;
-
-    this.shipLives = shipProperties.startingLives;
-    this.tf_lives;
-
-    this.score = 0;
-    this.tf_score;
-
-    this.sndDestroyed;
-    this.sndFire;
-
-    this.backgroundSprite;
-
-    this.explosionLargeGroup;
-    this.explosionMediumGroup;
-    this.explosionSmallGroup;
 };
 
 var graphicAssets = {
@@ -54,10 +24,6 @@ var graphicAssets = {
     explosionLarge:{URL:'assets/explosionLarge.png', name:'explosionLarge', width:64, height:64, frames:8},
     explosionMedium:{URL:'assets/explosionMedium.png', name:'explosionMedium', width:58, height:58, frames:8},
     explosionSmall:{URL:'assets/explosionSmall.png', name:'explosionSmall', width:41, height:41, frames:8},
-};
-
-var fontAssets = {
-    counterFontStyle:{font: '20px Arial', fill: '#FFFFFF', align: 'center'},
 };
 
 var soundAssets = {
@@ -94,6 +60,36 @@ var asteroidProperties = {
     asteroidSmall: { minVelocity: 50, maxVelocity: 300, minAngularVelocity: 0, maxAngularVelocity: 200, score: 100, explosion: 'explosionSmall'},
 };
 
+var fontAssets = {
+    counterFontStyle:{font: '20px Arial', fill: '#FFFFFF', align: 'center'},
+};
+
+var gameState = function(game){
+    this.shipSprite;
+    this.shipIsInvulnerable;
+
+    this.key_left;
+    this.key_right;
+    this.key_thrust;
+    this.key_fire;
+
+    this.bulletGroup;
+
+    this.asteroidGroup;
+
+    this.tf_lives;
+    this.tf_score;
+
+    this.sndDestroyed;
+    this.sndFire;
+
+    this.backgroundSprite;
+
+    this.explosionLargeGroup;
+    this.explosionMediumGroup;
+    this.explosionSmallGroup;
+};
+
 gameState.prototype = {
 
     preload: function () {
@@ -112,6 +108,13 @@ gameState.prototype = {
         game.load.spritesheet(graphicAssets.explosionMedium.name, graphicAssets.explosionMedium.URL, graphicAssets.explosionMedium.width, graphicAssets.explosionMedium.height, graphicAssets.explosionMedium.frames);
         game.load.spritesheet(graphicAssets.explosionSmall.name, graphicAssets.explosionSmall.URL, graphicAssets.explosionSmall.width, graphicAssets.explosionSmall.height, graphicAssets.explosionSmall.frames);
 
+    },
+
+    init: function () {
+        this.bulletInterval = 0;
+        this.asteroidsCount = asteroidProperties.startingAsteroids;
+        this.shipLives = shipProperties.startingLives;
+        this.score = 0;
     },
 
     create: function () {
@@ -144,9 +147,9 @@ gameState.prototype = {
         this.bulletGroup = game.add.group();
         this.asteroidGroup = game.add.group();
 
-        this.tf_lives =  game.add.text(20, 10, shipProperties.startingLives, fontAssets.counterFontStyle);
+        this.tf_lives =  game.add.text(20, 10, 'Lives: ' + shipProperties.startingLives, fontAssets.counterFontStyle);
 
-        this.tf_score = game.add.text(gameProperties.screenWidth -20, 10, "0", fontAssets.counterFontStyle);
+        this.tf_score = game.add.text(gameProperties.screenWidth -20, 10, "Score: 0", fontAssets.counterFontStyle);
         this.tf_score.align = 'right';
         this.tf_score.anchor.set(1,0);
 
@@ -178,7 +181,7 @@ gameState.prototype = {
 
         this.bulletGroup.enableBody = true;
         this.bulletGroup.physicsBodyType = Phaser.Physics.ARCADE;
-        this.bulletGroup.createMultiple(30, graphicAssets.bullet.name);
+        this.bulletGroup.createMultiple(bulletProperties.maxCount, graphicAssets.bullet.name);
         this.bulletGroup.setAll('anchor.x', 0.5);
         this.bulletGroup.setAll('anchor.y', 0.5);
         this.bulletGroup.setAll('lifespan', bulletProperties.lifeSpan);
@@ -220,16 +223,16 @@ gameState.prototype = {
     },
 
     checkBoundaries: function (sprite) {
-        if (sprite.x < 0){
-            sprite.x = game.width;
-        } else if (sprite.x > game.width) {
-            sprite.x = 0;
+        if (sprite.x + gameProperties.padding < 0){
+            sprite.x = game.width + gameProperties.padding;
+        } else if (sprite.x - gameProperties.padding > game.width) {
+            sprite.x = -gameProperties.padding;
         }
 
-        if (sprite.y < 0){
-            sprite.y = game.height;
-        } else if (sprite.y > game.height) {
-            sprite.y = 0;
+        if (sprite.y + gameProperties.padding < 0){
+            sprite.y = game.height + gameProperties.padding;
+        } else if (sprite.y - gameProperties.padding > game.height) {
+            sprite.y = -gameProperties.padding;
         }
     },
 
@@ -314,7 +317,7 @@ gameState.prototype = {
 
     destroyShip: function(){
         this.shipLives-- ;
-        this.tf_lives.text = this.shipLives;
+        this.tf_lives.text = 'Lives: ' + this.shipLives;
 
         if (this.shipLives){
             game.time.events.add(Phaser.Timer.SECOND * shipProperties.timeToReset, this.resetShip, this);
@@ -353,10 +356,10 @@ gameState.prototype = {
 
     updateScore: function (score){
         this.score += score;
-        this.tf_score.text = this.score;
+        this.tf_score.text = 'Score: ' + this.score;
     },
 
-    nextlevel: function() {
+    nextLevel: function() {
         this.asteroidGroup.removeAll(true);
 
         if(this.asteroidsCount < asteroidProperties.maxAsteroids){
@@ -380,8 +383,9 @@ mainState.prototype = {
         var startInstructions = 'Click to Start -\n\nUP arrow key for thrust.\n\nLEFT and RIGHT arrow keys to turn.\n\nSPACE key to fire.';
 
         this.tf_start = game.add.text(game.world.centerX, game.world.centerY, startInstructions, fontAssets.counterFontStyle);
+        this.tf_start.align = 'center';
         this.tf_start.anchor.set(0.5, 0.5);
-        
+
         game.input.onDown.addOnce(this.startGame, this);
     },
 
