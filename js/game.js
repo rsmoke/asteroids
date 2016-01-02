@@ -7,6 +7,7 @@ var gameProperties = {
 };
 
 var states = {
+    main: "main",
     game: "game",
 };
 
@@ -317,8 +318,10 @@ gameState.prototype = {
 
         if (this.shipLives){
             game.time.events.add(Phaser.Timer.SECOND * shipProperties.timeToReset, this.resetShip, this);
+        } else {
+            game.time.events.add(Phaser.Timer.SECOND * shipProperties.timeToReset, this.endGame, this);
         }
-        
+
         var explosion = this.explosionLargeGroup.getFirstExists(false);
         explosion.reset(this.shipSprite.x, this.shipSprite.y);
         explosion.animations.play('explode', 30, false, true);
@@ -361,9 +364,33 @@ gameState.prototype = {
         }
 
         this.resetAsteroids();
-    }
+    },
+
+    endGame: function () {
+        game.state.start(states.main);
+    },
+};
+
+var mainState = function(game){
+    this.tf_start;
+};
+
+mainState.prototype = {
+    create: function (){
+        var startInstructions = 'Click to Start -\n\nUP arrow key for thrust.\n\nLEFT and RIGHT arrow keys to turn.\n\nSPACE key to fire.';
+
+        this.tf_start = game.add.text(game.world.centerX, game.world.centerY, startInstructions, fontAssets.counterFontStyle);
+        this.tf_start.anchor.set(0.5, 0.5);
+        
+        game.input.onDown.addOnce(this.startGame, this);
+    },
+
+    startGame:function (){
+        game.state.start(states.game);
+    },
 };
 
 var game = new Phaser.Game(gameProperties.screenWidth, gameProperties.screenHeight, Phaser.AUTO, 'gameDiv');
+game.state.add(states.main, mainState);
 game.state.add(states.game, gameState);
-game.state.start(states.game);
+game.state.start(states.main);
